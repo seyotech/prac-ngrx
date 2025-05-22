@@ -1,46 +1,76 @@
 import { createReducer, on } from '@ngrx/store';
 
-import { ICart } from '../app.state';
-import { addToCart } from './cart.actions';
+import { addToCart, removeFromCart } from './cart.actions';
 import { Product } from '../../models/product.type';
+import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 
-export const initialState: ICart = {
-  cartItems: [],
-  count: 0
-};
+export const cartItemsKey = 'cartItems';
 
+export interface State extends EntityState<Product> {}
+
+export const adapter: EntityAdapter<Product> = createEntityAdapter<Product>({
+  selectId: (product: Product) => product.id,
+  sortComparer: false,
+});
+
+export const initialState: State = adapter.getInitialState({});
 export const cartReducer = createReducer(
   initialState,
-  on(addToCart, (state: ICart, product: Product) => {
-    const cartItems = state.cartItems;
-    const existingProduct = cartItems.find((item) => item.id === product.id);
+  on(addToCart, (state, { product }) => {
+    
+    const existingProduct = state.entities[product.id];
+    console.log(state, existingProduct);
     if (existingProduct) {
-      const updatedCart = cartItems.map((item) =>
-        item.id === product.id ? { ...item, count: (item.count || 0) + 1 } : item
+      return adapter.updateOne(
+        {
+          id: product.id,
+          changes: { count: (existingProduct.count || 1) + 1 },
+        },
+        state
       );
-      return {
-        ...state,
-        cartItems: updatedCart,
-        count: state.count + 1,
-      };
     } else {
-      return {
-        ...state,
-        cartItems: [...cartItems, { ...product, count: 1 }],
-        count: state.count + 1,
-      };
+      return adapter.addOne({ ...product, count: 1 }, state);
     }
   }),
-//   on(removeFromCart, (state: ICart, {product: Product, decreaseOnly: boolean = true}) => {
-//     const existingProduct = this.cartItems.find(item => item.id === product.id);
-//     if (existingProduct) {
-//       if (decreaseOnly && existingProduct.count! > 1) {
-//         existingProduct.count! -= 1;  // Decrease the count
-//       } else {
-//         // If count is 1 or if we want to remove entirely
-//         this.cartItems = this.cartItems.filter(item => item.id !== product.id);  // Remove the product
-//       }
-//       this.cartItemsSubject.next(this.cartItems);  // Emit updated cart items
-//     }
-//   })
+  on(
+    removeFromCart,
+    (state, { productId }) => adapter.removeOne(productId, state)
+    /*
+  {
+    const existingProducts = state.readingListProducts.filter((product: Product) => product.id !== productId)
+    return {
+    ...state,
+      readingListProducts: existingProducts
+    }
+  }*/
+  )
 );
+
+// export const initialState: ICart = {
+//   cartItems: [],
+//   count: 0
+// };
+
+// export const cartReducer = createReducer(
+//   initialState,
+//   on(addToCart, (state: ICart, product: Product) => {
+//     const cartItems = state.cartItems;
+//     const existingProduct = cartItems.find((item) => item.id === product.id);
+//     if (existingProduct) {
+//       const updatedCart = cartItems.map((item) =>
+//         item.id === product.id ? { ...item, count: (item.count || 0) + 1 } : item
+//       );
+//       return {
+//         ...state,
+//         cartItems: updatedCart,
+//         count: state.count + 1,
+//       };
+//     } else {
+//       return {
+//         ...state,
+//         cartItems: [...cartItems, { ...product, count: 1 }],
+//         count: state.count + 1,
+//       };
+//     }
+//   }),
+// );

@@ -41,8 +41,7 @@ export class ActionsComponent {
 
   addToCart(product: Product): void {
     this.handleLoginCheck(() => {
-      this.cartService.addToCart(product);
-      this.store.dispatch(addToCart(product));
+      this.store.dispatch(addToCart({product}));
     });
   }
 

@@ -25,11 +25,13 @@ export class ProductComponent implements OnInit {
   constructor(private store: Store<AppState>) {}
   ngOnInit(): void {
     this.store.select(selectCart).subscribe((cartState) => {
-      this.cartItems = cartState.cartItems;
-      const cartProduct = this.cartItems.find(
-        (item) => item.id === this.product.id
-      );
-      this.product.count = cartProduct?.count;
+      console.log(cartState);
+      
+      // this.cartItems = cartState.cartItems;
+      // const cartProduct = this.cartItems.find(
+      //   (item) => item.id === this.product.id
+      // );
+      // this.product.count = cartProduct?.count;
     });
   }
 

@@ -40,9 +40,20 @@ export class CartComponent {
   ) {}
 
   ngOnInit(): void {
-    this.store.select(selectCart).subscribe((cartState) => {
-      this.cartItems = cartState.cartItems;
-      this.cartItemCount$ = cartState.count;
+    // this.store.select(selectCart).subscribe((cartState) => {
+    //   this.cartItems = cartState.cartItems;
+    //   this.cartItemCount$ = cartState.count;
+    //   console.log(this.cartItemCount$, this.cartItems);
+    // });
+    // Subscribe to the cart selector to get cart items
+    this.store.select(selectCart).subscribe(cartItems => {
+      this.cartItems = cartItems;
+      console.log(cartItems, this.cartItems);
+      
+      // this.cartItemCount$ = cartItems.reduce(
+      //   (total, item) => total + (item.count || 1),
+      //   0
+      // );
     });
   }
   open(): void {
@@ -53,7 +64,7 @@ export class CartComponent {
     this.visible = false;
   }
   increaseCount(product: Product): void {
-    this.store.dispatch(addToCart(product));
+    this.store.dispatch(addToCart({product}));
   }
 
   decreaseCount(product: Product): void {
@@ -63,4 +74,15 @@ export class CartComponent {
       this.cartService.removeFromCart(product); // Remove product completely if count reaches 0
     }
   }
+  // increaseCount(product: Product): void {
+  //   this.store.dispatch(addToCart({ product }));
+  // }
+
+  // decreaseCount(product: Product): void {
+  //   if (product.count && product.count > 1) {
+  //     this.cartService.removeFromCart(product, true); // Decrease count if more than 1
+  //   } else {
+  //     this.cartService.removeFromCart(product); // Remove product completely if count reaches 0
+  //   }
+  // }
 }
