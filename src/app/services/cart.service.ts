@@ -24,6 +24,8 @@ export class CartService {
 //     this.cartItemsSubject.next(this.cartItems);
 //   }
   addToCart(product: Product): void {
+    
+    // this.store.dispatch(addToCart(product));
     const existingProduct = this.cartItems.find(item => item.id === product.id);
     if (existingProduct) {
       existingProduct.count! += 1;  // Increment count if product exists

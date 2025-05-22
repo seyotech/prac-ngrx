@@ -1,7 +1,11 @@
-import { Product } from "../models/product.type";
+import { Product } from '../models/product.type';
 
 export interface AppState {
-    cart: any;
-    products: Product[];  
-    // vegetables: any;
-  }
+  cart: ICart;
+  products: Product[];
+}
+
+export interface ICart {
+  cartItems: Product[];
+  count: number;
+}

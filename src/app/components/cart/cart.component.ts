@@ -1,24 +1,30 @@
+import { Store } from '@ngrx/store';
 import { Component } from '@angular/core';
-import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzDrawerModule } from 'ng-zorro-antd/drawer';
-import { NzBadgeModule } from 'ng-zorro-antd/badge';
-import { CartService } from '../../services/cart.service';
-import { Product } from '../../models/product.type';
 import { CommonModule } from '@angular/common';
 import { NzImageModule } from 'ng-zorro-antd/image';
+import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzEmptyModule } from 'ng-zorro-antd/empty';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+
+// local imports 
+import { AppState } from '../../store/app.state';
+import { Product } from '../../models/product.type';
+import { addToCart } from '../../store/cart/cart.actions';
+import { CartService } from '../../services/cart.service';
+import { selectCart } from '../../store/cart/cart.selectors';
 import { BillingComponent } from './billing/billing.component';
 
 @Component({
   selector: 'app-cart',
   standalone: true,
   imports: [
-    NzButtonModule,
-    NzDrawerModule,
-    NzImageModule,
-    NzBadgeModule,
     CommonModule,
     NzEmptyModule,
+    NzImageModule,
+    NzBadgeModule,
+    NzButtonModule,
+    NzDrawerModule,
     BillingComponent,
   ],
   templateUrl: './cart.component.html',
@@ -26,18 +32,17 @@ import { BillingComponent } from './billing/billing.component';
 })
 export class CartComponent {
   visible = false;
-  cartItemCount = 0;
   cartItems: Product[] = [];
-  constructor(private cartService: CartService) {}
+  cartItemCount$: number = 0;
+  constructor(
+    private cartService: CartService,
+    private store: Store<AppState>
+  ) {}
 
   ngOnInit(): void {
-    this.cartService.cartItems$.subscribe((items) => {
-      this.cartItems = items;
-      console.log(items);
-      this.cartItemCount = items.reduce(
-        (total, item) => total + (item.count || 0),
-        0
-      );
+    this.store.select(selectCart).subscribe((cartState) => {
+      this.cartItems = cartState.cartItems;
+      this.cartItemCount$ = cartState.count;
     });
   }
   open(): void {
@@ -47,11 +52,8 @@ export class CartComponent {
   close(): void {
     this.visible = false;
   }
-  // removeFromCart(product: Product): void {
-  //   this.cartService.removeFromCart(product);
-  // }
   increaseCount(product: Product): void {
-    this.cartService.addToCart(product);
+    this.store.dispatch(addToCart(product));
   }
 
   decreaseCount(product: Product): void {

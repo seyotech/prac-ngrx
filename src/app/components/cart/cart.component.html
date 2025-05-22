@@ -1,6 +1,6 @@
 
 <div class="cart" (click)="open()">Cart <img src="../../../assets/images/cart.png" alt="" />
-  <nz-badge [nzCount]="cartItemCount">
+  <nz-badge [nzCount]="cartItemCount$">
       <a class="head-example"></a>
   </nz-badge>
 </div>
@@ -22,8 +22,8 @@
         </div>
       </div>
     </div>
-    <nz-empty *ngIf="!cartItemCount"></nz-empty>
-    <app-billing *ngIf="cartItemCount"></app-billing>
+    <nz-empty *ngIf="!cartItemCount$"></nz-empty>
+    <app-billing *ngIf="cartItemCount$"></app-billing>
   </ng-container>
 </nz-drawer>
 

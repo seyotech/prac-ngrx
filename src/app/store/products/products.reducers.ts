@@ -2,7 +2,7 @@ import { createReducer, on } from '@ngrx/store';
 import { loadProducts, loadProductsSuccess } from './products.actions';
 import { AppState } from '../app.state';
 
-export const initialState: AppState = {
+export const initialState: any = {
   cart: [],
   products: [],
   //   vegetables: []

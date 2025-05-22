@@ -12,12 +12,15 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { routes } from './app.routes';
 import { provideNzIcons } from './icons-provider';
 import { authInterceptor } from './components/auth/utils/auth.interceptors';
+import { cartReducer } from './store/cart/cart.reducers';
 
 registerLocaleData(en);
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideStore(),
+    provideStore({
+      cart: cartReducer
+    }),
     provideNzIcons(),
     provideEffects(),
     provideNzI18n(en_US),
