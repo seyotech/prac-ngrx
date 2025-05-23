@@ -1,14 +1,18 @@
-import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
   Validators,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { Store } from '@ngrx/store';
 import { AsyncPipe } from '@angular/common';
-import { of } from 'rxjs';
-import { CartService } from '../../../services/cart.service';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+
+// local imports
+import { Observable } from 'rxjs';
+import { AppState } from '../../../store/app.state';
+import { selectTotalAmount } from '../../../store/cart/cart.selectors';
 
 @Component({
   selector: 'app-billing',
@@ -18,11 +22,12 @@ import { CartService } from '../../../services/cart.service';
   styleUrl: './billing.component.css',
 })
 export class BillingComponent implements OnInit {
-  constructor(private formBuilder: FormBuilder, private cartService: CartService) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private store: Store<AppState>
+  ) {}
   billingForm: FormGroup = this.formBuilder.group({});
-
-  totalAmount = this.cartService.totalPrice$;
-
+  totalAmount$: Observable<number> = this.store.select(selectTotalAmount);
 
   ngOnInit(): void {
     this.billingForm = this.formBuilder.group({
@@ -36,12 +41,12 @@ export class BillingComponent implements OnInit {
       ],
       address: ['', [Validators.required, Validators.minLength(6)]],
     });
+    //  this.totalAmount$ = this.store.select(selectTotalAmount);
   }
 
   onSubmit(): void {
     if (this.billingForm.valid) {
       console.log('Billing Info:', this.billingForm.value);
-      // Handle payment logic here
     } else {
       console.log('Form is invalid');
     }

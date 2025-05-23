@@ -16,6 +16,7 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 
+// local imports
 import { Product } from '../../../models/product.type';
 import { AuthService } from '../../../services/auth.services';
 import { ProductService } from '../../../services/product.services';
@@ -95,7 +96,6 @@ export class EditProductComponent implements OnInit, OnChanges {
       thumbnail: this.form.value.thumbnail || '',
     };
     this.productService.updateProduct(this.product.id, updatedProduct);
-
     this.form.reset();
   }
 }

@@ -14,20 +14,23 @@ import { provideNzIcons } from './icons-provider';
 import { authInterceptor } from './components/auth/utils/auth.interceptors';
 import { cartReducer } from './store/cart/cart.reducers';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
+import { productsReducer } from './store/products/products.reducers';
+import { ProductEffects } from './store/products/products.effects';
 
 registerLocaleData(en);
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideStore({
-        cart: cartReducer
+        cart: cartReducer,
+        products: productsReducer
     }),
     provideNzIcons(),
-    provideEffects(),
     provideNzI18n(en_US),
     provideRouter(routes),
     provideAnimationsAsync(),
     importProvidersFrom(FormsModule),
+    provideEffects([ProductEffects]),
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),

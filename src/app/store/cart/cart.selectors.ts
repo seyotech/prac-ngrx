@@ -1,23 +1,31 @@
-import { createSelector } from "@ngrx/store";
-import { AppState, ICart } from "../app.state";
+import { createSelector } from '@ngrx/store';
+import { AppState, ICart } from '../app.state';
+import { selectAll } from './cart.reducers';
 
-// Select the cart slice from AppState
 export const selectCartFeature = (state: AppState) => state.cart;
 
-// Select the cartItems array from the cart slice
-export const selectCart = createSelector(
+export const selectCartState = createSelector(
   selectCartFeature,
-  (cart: ICart) => cart.cartItems
+  (cart: ICart) => ({
+    cartItems: selectAll(cart),
+    count: cart.count,
+  })
 );
-// export const selectCart = (state: AppState) => state.cart;
-// export const selectCartItems = createSelector(
-//     selectCart,
-//     (cart: ICart) => cart.cart
-//   );
 
-// export const selectCartQuantity = createSelector(selectCart, (state) => {
-//     return state;
-// })
-
-
-
+export const selectTotalAmount = createSelector(
+  selectCartFeature,
+  (cart: ICart) => {
+    const cartItems = selectAll(cart);
+    return cartItems.reduce(
+      (total, item) => total + (item.price ?? 0) * (item.count ?? 1),
+      0
+    );
+  }
+);
+// export const selectCartState = createSelector(
+//   selectCartFeature,
+//   (cart: ICart) => ({
+//     cartItems: cart.cartItems,
+//     count: cart.count
+//   })
+// );

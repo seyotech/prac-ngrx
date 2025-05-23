@@ -7,13 +7,16 @@ import { NzEmptyModule } from 'ng-zorro-antd/empty';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 
-// local imports 
+// local imports
 import { AppState } from '../../store/app.state';
 import { Product } from '../../models/product.type';
-import { addToCart } from '../../store/cart/cart.actions';
+import { addToCart, removeFromCart } from '../../store/cart/cart.actions';
 import { CartService } from '../../services/cart.service';
-import { selectCart } from '../../store/cart/cart.selectors';
+import {
+  selectCartState,
+} from '../../store/cart/cart.selectors';
 import { BillingComponent } from './billing/billing.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-cart',
@@ -34,27 +37,20 @@ export class CartComponent {
   visible = false;
   cartItems: Product[] = [];
   cartItemCount$: number = 0;
+  private subscriptions = new Subscription();
   constructor(
     private cartService: CartService,
     private store: Store<AppState>
   ) {}
 
   ngOnInit(): void {
-    // this.store.select(selectCart).subscribe((cartState) => {
-    //   this.cartItems = cartState.cartItems;
-    //   this.cartItemCount$ = cartState.count;
-    //   console.log(this.cartItemCount$, this.cartItems);
-    // });
-    // Subscribe to the cart selector to get cart items
-    this.store.select(selectCart).subscribe(cartItems => {
-      this.cartItems = cartItems;
-      console.log(cartItems, this.cartItems);
-      
-      // this.cartItemCount$ = cartItems.reduce(
-      //   (total, item) => total + (item.count || 1),
-      //   0
-      // );
-    });
+    this.subscriptions.add(
+      this.store.select(selectCartState).subscribe((cartState) => {
+        this.cartItems = cartState.cartItems;
+        this.cartItemCount$ = cartState.count;
+        console.log('Cart state updated:', cartState);
+      })
+    );
   }
   open(): void {
     this.visible = true;
@@ -64,25 +60,18 @@ export class CartComponent {
     this.visible = false;
   }
   increaseCount(product: Product): void {
-    this.store.dispatch(addToCart({product}));
+    this.store.dispatch(addToCart({ product }));
   }
 
   decreaseCount(product: Product): void {
-    if (product.count && product.count > 1) {
-      this.cartService.removeFromCart(product, true); // Decrease count if more than 1
-    } else {
-      this.cartService.removeFromCart(product); // Remove product completely if count reaches 0
-    }
+  this.store.dispatch(
+    removeFromCart({
+      product,
+      decreaseOnly: !!(product.count && product.count > 1),
+    })
+  );
+}
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
-  // increaseCount(product: Product): void {
-  //   this.store.dispatch(addToCart({ product }));
-  // }
-
-  // decreaseCount(product: Product): void {
-  //   if (product.count && product.count > 1) {
-  //     this.cartService.removeFromCart(product, true); // Decrease count if more than 1
-  //   } else {
-  //     this.cartService.removeFromCart(product); // Remove product completely if count reaches 0
-  //   }
-  // }
 }

@@ -1,21 +1,11 @@
-import { createAction, props } from "@ngrx/store";
-import { Product } from "../../models/product.type";
-
-// export const addToCart = createAction('[Item] Add To Cart', props<Product>())
-// export const removeFromCart = createAction('[Item] Remove From Cart')
-
+import { createAction, props } from '@ngrx/store';
+import { Product } from '../../models/product.type';
 
 export const addToCart = createAction(
-  '[Products Reading List] Add to the list',
+  '[Cart] Add To Cart',
   props<{ product: Product }>()
 );
-
-
 export const removeFromCart = createAction(
-  '[Products Reading List] Remove from list',
-  props<{ productId: string }>()
-);
-export const decreaseCartItemCount = createAction(
-  '[Cart] Decrease Item Count',
-  props<{ productId: string | number }>()
+  '[Cart] Remove From Cart',
+  props<{ product: Product; decreaseOnly?: boolean }>()
 );

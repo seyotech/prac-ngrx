@@ -1,15 +1,14 @@
+import { Store } from '@ngrx/store';
 import { Component, Input } from '@angular/core';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { Router, RouterModule } from '@angular/router';
 
 // local imports
 import { Product } from '../../../models/product.type';
-import { CartService } from '../../../services/cart.service';
+import { addToCart } from '../../../store/cart/cart.actions';
 import { AuthService } from '../../../services/auth.services';
 import { ProductService } from '../../../services/product.services';
 import { EditProductComponent } from '../edit-product/edit-product.component';
-import { Store } from '@ngrx/store';
-import { addToCart } from '../../../store/cart/cart.actions';
 
 @Component({
   selector: 'product-actions',
@@ -21,11 +20,10 @@ import { addToCart } from '../../../store/cart/cart.actions';
 export class ActionsComponent {
   @Input('product') product!: Product;
   constructor(
-    private cartService: CartService,
-    private productService: ProductService,
+    private store: Store,
     private router: Router,
     private authService: AuthService,
-    private store: Store,
+    private productService: ProductService,
   ) {}
   isLoggedIn$ = this.authService.isLoggedIn();
 
@@ -41,7 +39,7 @@ export class ActionsComponent {
 
   addToCart(product: Product): void {
     this.handleLoginCheck(() => {
-      this.store.dispatch(addToCart({product}));
+      this.store.dispatch(addToCart({ product }));
     });
   }
 

@@ -19,7 +19,7 @@
           />
         </div>
         <p class="total">
-          Total: {{ totalAmount | async | currency: 'USD' }}
+          Total: {{ totalAmount$ | async | currency: 'USD' }}
         </p>
       </div>
   
@@ -31,7 +31,7 @@
         nzType="primary"
         class="checkout-button"
       >
-        Checkout {{ totalAmount | async | currency: 'USD' }}
+        Checkout {{ totalAmount$ | async | currency: 'USD' }}
       </button>
     </form>
   </div>

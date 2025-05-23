@@ -50,3 +50,18 @@
     </div>
   </div>
 </section>
+<!-- <div>
+  <app-topbar></app-topbar>
+  <div *ngIf="loading$ | async; else content">Loading...</div>
+  <ng-template #content>
+    <div *ngFor="let product of products$ | async">
+      <app-product [product]="product"></app-product>
+    </div>
+    <nz-pagination
+      [nzPageIndex]="currentPage"
+      [nzTotal]="(total$ | async) || 0"
+      [nzPageSize]="limit"
+      (nzPageIndexChange)="onPageChange($event)"
+    ></nz-pagination>
+  </ng-template>
+</div> -->
