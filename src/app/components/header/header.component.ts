@@ -1,14 +1,16 @@
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
-import { CartComponent } from '../cart/cart.component';
-import { RouterModule } from '@angular/router';
-import { CartService } from '../../services/cart.service';
-import { AuthService } from '../../services/auth.services';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { CartComponent } from '../cart/cart.component';
+import { Observable } from 'rxjs';
+import { selectCurrentUser, selectIsLoggedIn } from '../../store/auth/auth.selectors';
+import { checkAuthStatus, logout } from '../../store/auth/auth.actions';
 
 @Component({
   selector: 'app-header',
@@ -24,31 +26,33 @@ import { FormsModule } from '@angular/forms';
     FormsModule,
   ],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.css'
+  styleUrls: ['./header.component.css'],
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   isCollapsed = false;
-  cartItemCount = 0;
-  isLoggedIn = false;
+  // cartItemCount$: Observable<number>;
+  isLoggedIn$: Observable<boolean>;
 
-  constructor(
-    private cartService: CartService,
-    private authService: AuthService
-  ) {}
-  user = this.authService.isLoggedIn();
-  
+  constructor(private store: Store) {
+    // Select state from the store
+    this.isLoggedIn$ = this.store.select(selectIsLoggedIn);
+    console.log(this.isLoggedIn$, 'lll', this.store.select(selectCurrentUser));
+    
+    // this.cartItemCount$ = this.store
+    //   .select(selectCartItems)
+    //   .pipe(map((items) => items.length));
+  }
 
   ngOnInit(): void {
-    this.cartService.cartItems$.subscribe((items) => {
-      this.cartItemCount = items.length;
-    });
+    // Dispatch action to check auth status on component initialization
+    // this.store.dispatch(checkAuthStatus());
 
-    this.authService.isLoggedIn().subscribe((status) => {
-      this.isLoggedIn = status;
-    });
+    // Dispatch action to load cart items (assuming a similar action exists)
+    // this.store.dispatch(loadCartItems());
   }
 
   logout(): void {
-    this.authService.logout();
+    // Dispatch logout action
+    this.store.dispatch(logout());
   }
 }

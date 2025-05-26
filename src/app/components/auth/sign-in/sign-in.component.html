@@ -66,19 +66,22 @@
                   </span>
                 </label>
               </div>
-              <div *ngIf="error" class="error-message">
-                {{ error }}
-              </div>
+              <!-- <div *ngIf="error" class="error-message">
+                {{ error$ }}
+              </div> -->
+              <div *ngIf="error$ | async as error" class="error-message">{{ error }}</div>
 
+              
               <div class="field padding-bottom--24">
-                <button
+                <!-- <button
                   (click)="signIn()"
                   type="submit"
                   class="submit"
                   name="submit"
                 >
                   Sign in
-                </button>
+                </button> -->
+                <button class="submit" type="submit" [disabled]="(isSubmitting$ | async)">Sign In</button>
               </div>
             </form>
           </div>

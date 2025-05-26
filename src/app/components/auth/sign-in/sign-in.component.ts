@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -7,8 +7,14 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { authValidator } from '../validators/auth.validators';
-import { AuthService } from '../../../services/auth.services';
+import { Observable } from 'rxjs';
+import {
+  selectAuthError,
+  selectIsLoading,
+} from '../../../store/auth/auth.selectors';
+import { login } from '../../../store/auth/auth.actions';
 
 @Component({
   selector: 'app-sign-in',
@@ -17,16 +23,15 @@ import { AuthService } from '../../../services/auth.services';
   templateUrl: './sign-in.component.html',
   styleUrl: './sign-in.component.css',
 })
-export class SignInComponent {
+export class SignInComponent implements OnInit {
   regForm: FormGroup;
-  isSubmitting = false;
-  error: string | null = null;
+  isSubmitting$: Observable<boolean>;
+  error$: Observable<string | null>;
   returnUrl: string = '/';
 
   constructor(
     private formBuilder: FormBuilder,
-    private authService: AuthService,
-    private router: Router,
+    private store: Store,
     private route: ActivatedRoute
   ) {
     this.regForm = this.formBuilder.group({
@@ -43,33 +48,24 @@ export class SignInComponent {
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
 
-    // Get returnUrl from route query
-    // this.route.snapshot.queryParamMap.get('returnUrl') || '/';
+    this.isSubmitting$ = this.store.select(selectIsLoading);
+    this.error$ = this.store.select(selectAuthError);
+
     this.route.queryParams.subscribe((params) => {
       this.returnUrl = params['returnUrl'] || '/';
     });
   }
 
+  ngOnInit(): void {}
+
   signIn() {
+    console.log('ddd', this.isSubmitting$, this.error$);
+    
     if (this.regForm.invalid) return;
 
-    this.isSubmitting = true;
-    this.error = null;
-
     const { userName, password } = this.regForm.value;
-
-    this.authService
-      .login({ username: userName, password })
-      .subscribe({
-        next: (user) => {
-          this.authService.setUser(user);
-          this.router.navigateByUrl(this.returnUrl);
-        },
-        error: (err) => {
-          this.error =
-            'Login failed: ' + (err.error?.message || 'Invalid credentials');
-          this.isSubmitting = false;
-        },
-      });
+    this.store.dispatch(
+      login({ credentials: { username: userName, password } })
+    );
   }
 }

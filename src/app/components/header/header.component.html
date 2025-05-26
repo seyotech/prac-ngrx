@@ -7,7 +7,7 @@
       <app-cart><div class="cart">Cart <img src="../assets/images/cart.png" alt="Cart" /></div></app-cart>
     </li>
 
-    <li *ngIf="isLoggedIn" nz-menu-item>
+    <li *ngIf="isLoggedIn$ | async" nz-menu-item>
       <a nz-dropdown [nzDropdownMenu]="menu">
         <div class="cart"><span></span><img src="../assets/images/avatar.png" alt="Avatar" /></div>
       </a>
@@ -18,7 +18,7 @@
       </nz-dropdown-menu>
     </li>
 
-    <li *ngIf="!isLoggedIn" nz-menu-item>
+    <li *ngIf="!(isLoggedIn$ | async)" nz-menu-item>
       <div class="cart"><a routerLink="/sign-in">Login</a></div>
     </li>
   </ul>

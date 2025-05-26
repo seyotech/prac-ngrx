@@ -16,6 +16,8 @@ import { cartReducer } from './store/cart/cart.reducers';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { productsReducer } from './store/products/products.reducers';
 import { ProductEffects } from './store/products/products.effects';
+import { authReducer } from './store/auth/auth.reducers';
+import { AuthEffects } from './store/auth/auth.effects';
 
 registerLocaleData(en);
 
@@ -23,14 +25,15 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideStore({
         cart: cartReducer,
-        products: productsReducer
+        products: productsReducer,
+        auth: authReducer,
     }),
     provideNzIcons(),
     provideNzI18n(en_US),
     provideRouter(routes),
     provideAnimationsAsync(),
     importProvidersFrom(FormsModule),
-    provideEffects([ProductEffects]),
+    provideEffects([ProductEffects, AuthEffects]),
     provideStoreDevtools({
       maxAge: 25,
       logOnly: !isDevMode(),
